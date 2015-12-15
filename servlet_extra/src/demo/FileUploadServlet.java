@@ -31,7 +31,7 @@ public class FileUploadServlet extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        final String path=request.getParameter("destination");
+        final String path=getServletContext().getRealPath("/");
         final Part filePart=request.getPart("file");
         final String fileName = getFileName(filePart);
         OutputStream out = null;
@@ -39,8 +39,7 @@ public class FileUploadServlet extends HttpServlet {
         final PrintWriter writer = response.getWriter();
         try {
             // to get the real file path of web resources
-            LOGGER.log(Level.INFO, getServletContext().getRealPath("/upload.html"));
-
+            LOGGER.log(Level.INFO, getServletContext().getRealPath("/"));
             // create the full path name of the file to be stored
             out = new FileOutputStream(new File(path + File.separator + fileName));
 
@@ -53,7 +52,10 @@ public class FileUploadServlet extends HttpServlet {
                 out.write(bytes, 0, read);
             }
             // display the html message on successful file upload
+            writer.println("<html><body>");
             writer.println("New file " + fileName + " create at " + path);
+            writer.println("<img src='"+fileName+"'/>");
+            writer.println("</body></html>");
             LOGGER.log(Level.INFO, "File {0} being uploaded to {1}", new Object[]{fileName, path});
 
         } catch (FileNotFoundException fne) {
